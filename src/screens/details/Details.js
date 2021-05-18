@@ -52,7 +52,8 @@ const styles = (theme => ({
     'background-color': 'white',
     width: '60px',
     height: '50px',
-    'margin-left': '-20px',
+    'margin-left': '-20px', 
+    'z-index': 0,
   },
   cartHeader: {
     'padding-bottom': '0px',
