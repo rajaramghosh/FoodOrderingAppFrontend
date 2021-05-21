@@ -109,7 +109,7 @@ export const makeApiCall = (
     : xhr.send(JSON.stringify(requestDataBodyObj));
   xhr.addEventListener("readystatechange", function () {
     if (this.readyState === 4) {
-      if (xhr.status === 200) {
+      if (xhr.status === 200 || xhr.status === 201 ) {
         if (!isUndefinedOrNull(successCallback)) {
           successCallback(this.responseText, this.getAllResponseHeaders());
         }
