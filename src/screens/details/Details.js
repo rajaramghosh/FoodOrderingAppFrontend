@@ -52,7 +52,7 @@ const styles = (theme => ({
     'background-color': 'white',
     width: '60px',
     height: '50px',
-    'margin-left': '-20px', 
+    'margin-left': '-20px',
     'z-index': 0,
   },
   cartHeader: {
@@ -98,6 +98,7 @@ class Details extends Component {
   componentDidMount() {
     let that = this;
     const requestUrl = this.props.baseUrl + 'restaurant/' + this.props.match.params.id;
+    //Hit The Api with Util Method
     Utils.makeApiCall(
       requestUrl,
       null,
@@ -108,6 +109,7 @@ class Details extends Component {
         let categoriesName = [];
         let data = JSON.parse(responseText);
         data.categories.forEach(category => {
+          //Prepare Category Name Array
           categoriesName.push(category.category_name);
         });
         let restaurantDetails = {
@@ -121,12 +123,14 @@ class Details extends Component {
           categoriesName: categoriesName.toString(),
         }
         let categories = data.categories;
+        //Set State Data
         that.setState({
           restaurantDetails: restaurantDetails,
           categories: categories,
         });
       },
       ErrText => {
+        //Handle any error
         console.log('Fetch Error :-S', ErrText);
       }
     );
@@ -136,14 +140,18 @@ class Details extends Component {
   cartAddClickHandler = (item) => {
     let cartItems = this.state.cartItems;
     let itemPresentInCart = false;
+
+    //Check if item is already in the Cart
     cartItems.forEach(cartItem => {
       if (cartItem.id === item.id) {
+        //Update Quantity and Totals
         itemPresentInCart = true;
         cartItem.quantity++;
         cartItem.totalAmount = cartItem.price * cartItem.quantity;
       }
     })
 
+    //Not Found Add New item to Array
     if (!itemPresentInCart) {
       let cartItem = {
         id: item.id,
@@ -174,21 +182,28 @@ class Details extends Component {
   //Remove Item From Cart
   cartRemoveClickHandler = (item) => {
     let cartItems = this.state.cartItems;
+    //Get item index from current cart
     let index = cartItems.indexOf(item);
     let itemRemoved = false;
+    //Reduce the quantity
     cartItems[index].quantity--;
+
+    //if quantity is zero remove it from car array
     if (cartItems[index].quantity === 0) {
       cartItems.splice(index, 1);
       itemRemoved = true;
     } else {
+      //Update the item total ammmount
       cartItems[index].totalAmount = cartItems[index].price * cartItems[index].quantity; //Updating the Price of the item
     }
 
+    //Update Cart Totals
     let totalAmount = 0;
     cartItems.forEach(cartItem => {
       totalAmount = totalAmount + cartItem.totalAmount;
     })
 
+    //Update the States with correct snack message
     this.setState({
       cartItems: cartItems,
       snackBarOpen: true,
@@ -201,19 +216,21 @@ class Details extends Component {
   checkOutButtonClickHandler = () => {
     let cartItems = this.state.cartItems;
     let isLoggedIn = sessionStorage.getItem("access-token") == null ? false : true;
+
     if (cartItems.length === 0) {
+      //Check Item Length
       this.setState({
         snackBarOpen: true,
         snackBarMessage: "Please add an item to your cart!",
       })
     } else if (!isLoggedIn) {
+      //Check Login
       this.setState({
         snackBarOpen: true,
         snackBarMessage: "Please login first!",
       })
     } else {
-      console.log(this.state.cartItems);
-      console.log(this.state.restaurantDetails);
+      //Send Cart and Resto Details to Checkout 
       this.props.history.push({
         pathname: '/checkout',
         cartItems: this.state.cartItems,
@@ -222,7 +239,7 @@ class Details extends Component {
     }
   }
 
-  //Snack Notificatio Close
+  //Snack Notification Close
   snackBarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
